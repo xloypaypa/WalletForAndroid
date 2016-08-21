@@ -1,10 +1,12 @@
 package com.example.xsu.walletforandroid.net;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -13,6 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,6 +30,8 @@ public class NetService extends Service {
     private volatile InputStream inputStream;
     private volatile OutputStream outputStream;
 
+    private volatile Handler handler;
+
     private volatile String ip = null;
     private volatile int port = -1;
 
@@ -35,7 +40,15 @@ public class NetService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d("service", "bind");
         return new NetBinder();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        this.handler = null;
+        Log.d("service", "unbind");
+        return super.onUnbind(intent);
     }
 
     @Override
@@ -141,15 +154,34 @@ public class NetService extends Service {
                             for (int j = 0; j < len; j++) {
                                 result[j] = message.get(i + j + 1);
                             }
+                            for (int j = 0; j < len + i + 1; j++) {
+                                message.remove(0);
+                            }
                             Log.i("get message", new String(result));
+                            sendToUI(result);
                         }
+                        break;
                     }
+                }
+            }
+
+            private void sendToUI(byte[] result) {
+                if (handler != null) {
+                    Message message = new Message();
+                    Bundle bundle = new Bundle();
+                    bundle.putByteArray("message", result);
+                    message.setData(bundle);
+                    handler.sendMessage(message);
                 }
             }
         }.start();
     }
 
     public class NetBinder extends Binder {
+
+        public void setHandler(Handler handler) {
+            NetService.this.handler = handler;
+        }
 
         public void connect(String ip, int port) {
             NetService.this.ip = ip;
