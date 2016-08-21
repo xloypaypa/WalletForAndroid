@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -169,7 +168,20 @@ public class NetService extends Service {
                 if (handler != null) {
                     Message message = new Message();
                     Bundle bundle = new Bundle();
-                    bundle.putByteArray("message", result);
+                    int index;
+                    for (index = 0; index < result.length; index++) {
+                        if (result[index] == '#') {
+                            break;
+                        }
+                    }
+                    byte[] command = new byte[index];
+                    byte[] body = new byte[result.length - index - 1];
+
+                    System.arraycopy(result, 0, command, 0, index);
+                    System.arraycopy(result, index + 1 , body, 0, result.length - index - 1);
+
+                    bundle.putString("command", new String(command));
+                    bundle.putByteArray("body", body);
                     message.setData(bundle);
                     handler.sendMessage(message);
                 }

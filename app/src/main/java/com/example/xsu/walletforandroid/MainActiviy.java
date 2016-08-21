@@ -16,6 +16,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.xsu.walletforandroid.net.NetService;
+import com.example.xsu.walletforandroid.net.ProtocolBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Locale;
 
@@ -24,6 +28,9 @@ public class MainActiviy extends AppCompatActivity {
     private Handler handler;
     private ServiceConnection serviceConnection;
     private NetService.NetBinder netBinder;
+    private EditText ipEdit;
+    private EditText portEdit;
+    private Button connectButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,19 +40,33 @@ public class MainActiviy extends AppCompatActivity {
         this.handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
+                Bundle data = message.getData();
+                String command = data.getString("command");
+                byte[] body = data.getByteArray("body");
+
+                if (command == null || body == null) {
+                    return false;
+                }
+
+                if (command.equals("/getSessionID")) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(new String(body));
+                        String sessionId = jsonObject.getString("result");
+                        Intent intentToLogin = new Intent(MainActiviy.this, LoginActivity.class);
+                        intentToLogin.putExtra("sessionId", sessionId);
+                        MainActiviy.this.startActivity(intentToLogin);
+                        MainActiviy.this.onStop();
+                    } catch (JSONException e) {
+                        return false;
+                    }
+                }
                 return true;
             }
         });
 
-        Intent intent = new Intent(this, NetService.class);
-        this.startService(intent);
-
-        final EditText ipEdit = (EditText) this.findViewById(R.id.ipText);
-        final EditText portEdit = (EditText) this.findViewById(R.id.portText);
-        Button connectButton = (Button) this.findViewById(R.id.connectButton);
+        loadComponent();
 
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         if (sharedPreferences.getString("ip", null) != null) {
             ipEdit.setText(sharedPreferences.getString("ip", null));
         }
@@ -66,13 +87,33 @@ public class MainActiviy extends AppCompatActivity {
 
                 netBinder.connect(ip, port);
                 try {
-                    netBinder.sendMessage("/getSessionID#{}".getBytes());
+                    netBinder.sendMessage(ProtocolBuilder.getSessionId());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         });
 
+        startAndBindNetService();
+        Log.d("activity", "create");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.unbindService(serviceConnection);
+        Log.d("activity", "pause");
+    }
+
+    private void loadComponent() {
+        ipEdit = (EditText) this.findViewById(R.id.ipText);
+        portEdit = (EditText) this.findViewById(R.id.portText);
+        connectButton = (Button) this.findViewById(R.id.connectButton);
+    }
+
+    private void startAndBindNetService() {
+        Intent intentToNet = new Intent(this, NetService.class);
+        this.startService(intentToNet);
         serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -85,14 +126,6 @@ public class MainActiviy extends AppCompatActivity {
 
             }
         };
-        this.bindService(intent, serviceConnection, 0);
-        Log.d("activity", "create");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        this.unbindService(serviceConnection);
-        Log.d("activity", "pause");
+        this.bindService(intentToNet, serviceConnection, 0);
     }
 }
