@@ -10,7 +10,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActiviy" android:noHistory="true">
+        <activity
+            android:name=".MainActiviy"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,7 +22,8 @@
 
         <service android:name=".net.NetService" />
 
-        <activity android:name=".LoginActivity"/>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".RegisterActivity"></activity>
     </application>
 
 </manifest>

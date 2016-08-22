@@ -1,13 +1,15 @@
 package com.example.xsu.walletforandroid;
 
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,7 +19,7 @@ import com.example.xsu.walletforandroid.net.ProtocolBuilder;
 
 import org.json.JSONException;
 
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     private ServiceConnection serviceConnection;
     private NetService.NetBinder netBinder;
@@ -25,13 +27,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText usernameEditText;
     private EditText passwordEditText;
-    private Button loginButton;
-    private Button registerButton;
+    private EditText confirmPasswordEditText;
+    private Button registerButton, backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
         this.handler = new Handler(new Handler.Callback() {
             @Override
@@ -42,25 +44,36 @@ public class LoginActivity extends AppCompatActivity {
 
         loadComponent();
 
-        this.loginButton.setOnClickListener(new View.OnClickListener() {
+        this.backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-                String sessionId = getIntent().getStringExtra("sessionId");
-                try {
-                    netBinder.sendMessage(ProtocolBuilder.login(username, password, sessionId));
-                } catch (InterruptedException | JSONException e) {
-                    e.printStackTrace();
-                }
+                RegisterActivity.this.finish();
             }
         });
 
         this.registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentToLogin = new Intent(LoginActivity.this, RegisterActivity.class);
-                LoginActivity.this.startActivity(intentToLogin);
+                String username = usernameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                String confirmPassword = confirmPasswordEditText.getText().toString();
+                if (password.equals(confirmPassword)) {
+                    try {
+                        netBinder.sendMessage(ProtocolBuilder.register(username, password));
+                    } catch (InterruptedException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    new AlertDialog.Builder(RegisterActivity.this)
+                            .setTitle("error")
+                            .setMessage("please input same issue")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                }
             }
         });
     }
@@ -80,8 +93,9 @@ public class LoginActivity extends AppCompatActivity {
     private void loadComponent() {
         this.usernameEditText = (EditText) this.findViewById(R.id.usernameEditText);
         this.passwordEditText = (EditText) this.findViewById(R.id.passwordEditText);
-        this.loginButton = (Button) this.findViewById(R.id.loginButton);
+        this.confirmPasswordEditText = (EditText) this.findViewById(R.id.confirmPasswordEditText);
         this.registerButton = (Button) this.findViewById(R.id.registerButton);
+        this.backButton = (Button) this.findViewById(R.id.backButton);
     }
 
     private void bindNetService() {
@@ -101,4 +115,5 @@ public class LoginActivity extends AppCompatActivity {
         };
         this.bindService(intentToNet, serviceConnection, 0);
     }
+
 }
