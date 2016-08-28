@@ -196,8 +196,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMoneyFragmentInteraction(Uri uri) {
-
+    public void onAddMoneyFragmentInteraction(String typename, double value) {
+        try {
+            netBinder.sendMessage(ProtocolBuilder.addMoney(typename, value));
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -1,14 +1,16 @@
 package layout;
 
+import android.app.AlertDialog;
 import android.content.Context;
-import android.net.Uri;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -34,7 +36,9 @@ import static android.view.View.inflate;
 public class MoneyFragment extends Fragment {
 
     private OnMoneyFragmentInteractionListener mListener;
+
     private TableLayout tableLayout;
+    private Button addMoneyButton;
 
     private List<MoneyEntity> moneyEntities = new ArrayList<>();
 
@@ -63,13 +67,42 @@ public class MoneyFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_money, container, false);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //noinspection ConstantConditions
         this.tableLayout = (TableLayout) this.getView().findViewById(R.id.moneyTable);
+        this.addMoneyButton = (Button) this.getView().findViewById(R.id.addMoneyButton);
         setDataOnTable(moneyEntities);
-        Log.e("ss", "create " + this);
+
+        this.addMoneyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+
+                View dialogView = inflater.inflate(R.layout.dialog_add_money, null);
+                final EditText typenameEditText = (EditText) dialogView.findViewById(R.id.typenameEditText);
+                final EditText valueEditText = (EditText) dialogView.findViewById(R.id.valueEditText);
+
+                builder.setTitle("add money")
+                        .setView(dialogView)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                String typename = typenameEditText.getText().toString();
+                                double value = Double.parseDouble(valueEditText.getText().toString());
+                                mListener.onAddMoneyFragmentInteraction(typename, value);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                builder.create().show();
+            }
+        });
     }
 
     public void setMoneyList(List<MoneyEntity> moneyEntities) {
@@ -136,6 +169,6 @@ public class MoneyFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnMoneyFragmentInteractionListener {
-        void onMoneyFragmentInteraction(Uri uri);
+        void onAddMoneyFragmentInteraction(String typename, double value);
     }
 }

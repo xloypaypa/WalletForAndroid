@@ -17,8 +17,12 @@
     <string name="money">money</string>
     <string name="budget">budget</string>
 
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="add_money">add money</string>
 </resources>
