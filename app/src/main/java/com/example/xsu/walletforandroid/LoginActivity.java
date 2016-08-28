@@ -16,6 +16,7 @@ import com.example.xsu.walletforandroid.net.NetService;
 import com.example.xsu.walletforandroid.net.ProtocolBuilder;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -36,6 +37,33 @@ public class LoginActivity extends AppCompatActivity {
         this.handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
+                Bundle data = message.getData();
+                String command = data.getString("command");
+                byte[] body = data.getByteArray("body");
+
+                if (command == null || body == null) {
+                    return false;
+                }
+
+                if (command.equals("/login")) {
+                    try {
+                        netBinder.sendMessage(ProtocolBuilder.useApp("wallet"));
+                    } catch (InterruptedException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else if (command.equals("/useApp")) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(new String(body));
+                        String result = jsonObject.getString("result");
+                        if (result.equals("ok")) {
+                            Intent intentToMain = new Intent(LoginActivity.this, MainActivity.class);
+                            LoginActivity.this.startActivity(intentToMain);
+                            LoginActivity.this.onStop();
+                        }
+                    } catch (JSONException e) {
+                        return false;
+                    }
+                }
                 return true;
             }
         });

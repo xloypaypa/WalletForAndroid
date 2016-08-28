@@ -9,4 +9,16 @@
     <string name="login">login</string>
     <string name="confirm_password">confirm password</string>
     <string name="back">back</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="typename">typename</string>
+    <string name="value">value</string>
+
+    <string name="money">money</string>
+    <string name="budget">budget</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

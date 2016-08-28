@@ -23,7 +23,7 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
-public class MainActiviy extends AppCompatActivity {
+public class ConnectActivity extends AppCompatActivity {
 
     private Handler handler;
     private ServiceConnection serviceConnection;
@@ -35,7 +35,7 @@ public class MainActiviy extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_activiy);
+        setContentView(R.layout.activiy_connect);
 
         this.handler = new Handler(new Handler.Callback() {
             @Override
@@ -52,10 +52,10 @@ public class MainActiviy extends AppCompatActivity {
                     try {
                         JSONObject jsonObject = new JSONObject(new String(body));
                         String sessionId = jsonObject.getString("result");
-                        Intent intentToLogin = new Intent(MainActiviy.this, LoginActivity.class);
+                        Intent intentToLogin = new Intent(ConnectActivity.this, LoginActivity.class);
                         intentToLogin.putExtra("sessionId", sessionId);
-                        MainActiviy.this.startActivity(intentToLogin);
-                        MainActiviy.this.onStop();
+                        ConnectActivity.this.startActivity(intentToLogin);
+                        ConnectActivity.this.onStop();
                     } catch (JSONException e) {
                         return false;
                     }
