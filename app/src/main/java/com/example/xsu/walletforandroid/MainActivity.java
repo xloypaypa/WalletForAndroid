@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,14 +17,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
+import model.entity.MoneyEntity;
 import com.example.xsu.walletforandroid.net.NetService;
 import com.example.xsu.walletforandroid.net.ProtocolBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import layout.MoneyFragment;
 
@@ -67,8 +71,14 @@ public class MainActivity extends AppCompatActivity
 
                 if (command.equals("getMoney")) {
                     try {
+                        List<MoneyEntity> moneyEntities = new ArrayList<>();
                         JSONArray jsonArray = new JSONArray(new String(body));
-                        moneyFragment.setMoneyList(jsonArray);
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            MoneyEntity moneyEntity = new MoneyEntity();
+                            moneyEntity.updateValueFromJson(jsonArray.get(i).toString());
+                            moneyEntities.add(moneyEntity);
+                        }
+                        moneyFragment.setMoneyList(moneyEntities);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -115,7 +125,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 

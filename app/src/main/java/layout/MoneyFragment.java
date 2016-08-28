@@ -13,10 +13,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.xsu.walletforandroid.R;
+import model.entity.MoneyEntity;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.view.View.inflate;
 
@@ -62,19 +63,11 @@ public class MoneyFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         this.tableLayout = (TableLayout) this.getActivity().findViewById(R.id.moneyTable);
-        try {
-            setDataOnTable(new JSONArray("[]"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        setDataOnTable(new ArrayList<MoneyEntity>());
     }
 
-    public void setMoneyList(JSONArray jsonArray) {
-        try {
-            setDataOnTable(jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public void setMoneyList(List<MoneyEntity> moneyEntities) {
+        setDataOnTable(moneyEntities);
     }
 
     @Override
@@ -94,18 +87,18 @@ public class MoneyFragment extends Fragment {
         mListener = null;
     }
 
-    private void setDataOnTable(JSONArray jsonArray) throws JSONException {
+    private void setDataOnTable(List<MoneyEntity> moneyEntities) {
+        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+
         this.tableLayout.removeAllViews();
         addTitle();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-
+        for (MoneyEntity moneyEntity : moneyEntities) {
             TableRow tableRow = (TableRow) inflate(getContext(), R.layout.tablerow_money_and_budget, null);
             TextView typeName = (TextView) tableRow.findViewById(R.id.typename);
             TextView value = (TextView) tableRow.findViewById(R.id.value);
 
-            typeName.setText(jsonObject.getString("typename"));
-            value.setText(jsonObject.getString("value"));
+            typeName.setText(moneyEntity.getTypename());
+            value.setText(decimalFormat.format(moneyEntity.getValue()));
 
             this.tableLayout.addView(tableRow);
         }
