@@ -19,18 +19,11 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-/**
- * Created by xsu on 16/8/21.
- * it's the net service
- */
 public class NetService extends Service {
-
     private volatile Socket socket = null;
     private volatile InputStream inputStream;
     private volatile OutputStream outputStream;
-
     private volatile Handler handler;
-
     private volatile String ip = null;
     private volatile int port = -1;
 

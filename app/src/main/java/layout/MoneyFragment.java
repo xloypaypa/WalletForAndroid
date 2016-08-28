@@ -5,9 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.ButtonBarLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -33,6 +36,7 @@ public class MoneyFragment extends Fragment {
 
     private OnMoneyFragmentInteractionListener mListener;
     private TableLayout tableLayout;
+    private Button buttonLayout;
 
     private List<MoneyEntity> moneyEntities = new ArrayList<>();
 
@@ -65,7 +69,9 @@ public class MoneyFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         this.tableLayout = (TableLayout) this.getActivity().findViewById(R.id.moneyTable);
+        this.buttonLayout = (Button) this.getActivity().findViewById(R.id.add_type);
         setDataOnTable(moneyEntities);
+        addListenerOnButtonAddType();
     }
 
     public void setMoneyList(List<MoneyEntity> moneyEntities) {
@@ -120,6 +126,24 @@ public class MoneyFragment extends Fragment {
 
         this.tableLayout.addView(tableRow);
     }
+
+    private void addListenerOnButtonAddType() {
+        this.buttonLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View layout = inflater.inflate(R.layout.add_type_dialog, null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                        .setTitle("Please input type")
+                        .setView(layout)
+                        .setPositiveButton("YES", null)
+                        .setNegativeButton("NO", null);
+
+                builder.create().show();
+            }
+        });
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
