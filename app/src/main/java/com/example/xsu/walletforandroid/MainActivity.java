@@ -42,8 +42,9 @@ public class MainActivity extends AppCompatActivity
     private Handler handler;
 
     private FrameLayout fragment;
-    private MoneyFragment moneyFragment;
-    private BudgetFragment budgetFragment;
+
+    private List<MoneyEntity> moneyEntities;
+    private List<BudgetEntity> budgetEntities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +63,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         fragment = (FrameLayout) this.findViewById(R.id.fragment);
-        moneyFragment = (MoneyFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
-        budgetFragment = BudgetFragment.newInstance();
 
         this.handler = new Handler(new Handler.Callback() {
             @Override
@@ -76,6 +75,8 @@ public class MainActivity extends AppCompatActivity
                     return false;
                 }
 
+                List<Fragment> all = getSupportFragmentManager().getFragments();
+
                 if (command.equals("getMoney")) {
                     try {
                         List<MoneyEntity> moneyEntities = new ArrayList<>();
@@ -85,7 +86,12 @@ public class MainActivity extends AppCompatActivity
                             moneyEntity.updateValueFromJson(jsonArray.get(i).toString());
                             moneyEntities.add(moneyEntity);
                         }
-                        moneyFragment.setMoneyList(moneyEntities);
+                        MainActivity.this.moneyEntities = moneyEntities;
+                        for (Fragment fragment : all) {
+                            if (fragment instanceof MoneyFragment) {
+                                ((MoneyFragment) fragment).setMoneyList(moneyEntities);
+                            }
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -98,7 +104,12 @@ public class MainActivity extends AppCompatActivity
                             budgetEntity.updateValueFromJson(jsonArray.get(i).toString());
                             budgetEntities.add(budgetEntity);
                         }
-                        budgetFragment.setBudgetList(budgetEntities);
+                        MainActivity.this.budgetEntities = budgetEntities;
+                        for (Fragment fragment : all) {
+                            if (fragment instanceof BudgetFragment) {
+                                ((BudgetFragment) fragment).setBudgetList(budgetEntities);
+                            }
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -151,9 +162,22 @@ public class MainActivity extends AppCompatActivity
 
         Fragment fragment = null;
         if (id == R.id.nav_money) {
-            fragment = this.moneyFragment;
+            MoneyFragment moneyFragment = MoneyFragment.newInstance();
+            moneyFragment.setMoneyList(this.moneyEntities);
+            fragment = moneyFragment;
         } else if (id == R.id.nav_budget) {
-            fragment = this.budgetFragment;
+            BudgetFragment budgetFragment = BudgetFragment.newInstance();
+            budgetFragment.setBudgetList(this.budgetEntities);
+            fragment = budgetFragment;
+        }
+
+        List<Fragment> all = getSupportFragmentManager().getFragments();
+        for (Fragment now : all) {
+            if (now instanceof MoneyFragment) {
+                ((MoneyFragment) now).setMoneyList(moneyEntities);
+            } else if (now instanceof BudgetFragment) {
+                ((BudgetFragment) now).setBudgetList(budgetEntities);
+            }
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();

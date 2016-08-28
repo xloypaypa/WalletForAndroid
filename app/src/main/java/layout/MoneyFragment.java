@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,12 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.xsu.walletforandroid.R;
-import model.entity.MoneyEntity;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.entity.MoneyEntity;
 
 import static android.view.View.inflate;
 
@@ -64,8 +66,10 @@ public class MoneyFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        this.tableLayout = (TableLayout) this.getActivity().findViewById(R.id.moneyTable);
+        //noinspection ConstantConditions
+        this.tableLayout = (TableLayout) this.getView().findViewById(R.id.moneyTable);
         setDataOnTable(moneyEntities);
+        Log.e("ss", "create " + this);
     }
 
     public void setMoneyList(List<MoneyEntity> moneyEntities) {

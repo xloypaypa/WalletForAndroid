@@ -65,7 +65,8 @@ public class BudgetFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        this.tableLayout = (TableLayout) this.getActivity().findViewById(R.id.budgetTable);
+        //noinspection ConstantConditions
+        this.tableLayout = (TableLayout) this.getView().findViewById(R.id.budgetTable);
         setDataOnTable(this.budgetEntities);
     }
 
