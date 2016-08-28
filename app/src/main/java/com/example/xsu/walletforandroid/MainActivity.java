@@ -18,8 +18,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 
-import model.entity.MoneyEntity;
 import com.example.xsu.walletforandroid.net.NetService;
 import com.example.xsu.walletforandroid.net.ProtocolBuilder;
 
@@ -29,16 +29,21 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+import layout.BudgetFragment;
 import layout.MoneyFragment;
+import model.entity.BudgetEntity;
+import model.entity.MoneyEntity;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MoneyFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, MoneyFragment.OnMoneyFragmentInteractionListener, BudgetFragment.OnBudgetFragmentInteractionListener {
 
     private ServiceConnection serviceConnection;
     private NetService.NetBinder netBinder;
     private Handler handler;
 
+    private FrameLayout fragment;
     private MoneyFragment moneyFragment;
+    private BudgetFragment budgetFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +61,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        fragment = (FrameLayout) this.findViewById(R.id.fragment);
         moneyFragment = (MoneyFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        budgetFragment = BudgetFragment.newInstance();
 
         this.handler = new Handler(new Handler.Callback() {
             @Override
@@ -79,6 +86,19 @@ public class MainActivity extends AppCompatActivity
                             moneyEntities.add(moneyEntity);
                         }
                         moneyFragment.setMoneyList(moneyEntities);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else if (command.equals("getBudget")) {
+                    try {
+                        List<BudgetEntity> budgetEntities  = new ArrayList<>();
+                        JSONArray jsonArray = new JSONArray(new String(body));
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            BudgetEntity budgetEntity = new BudgetEntity();
+                            budgetEntity.updateValueFromJson(jsonArray.get(i).toString());
+                            budgetEntities.add(budgetEntity);
+                        }
+                        budgetFragment.setBudgetList(budgetEntities);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -133,12 +153,12 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_money) {
             fragment = this.moneyFragment;
         } else if (id == R.id.nav_budget) {
-
+            fragment = this.budgetFragment;
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.fragment, fragment).commit();
+                .replace(this.fragment.getId(), fragment).commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -152,7 +172,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onMoneyFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onBudgetFragmentInteraction(Uri uri) {
 
     }
 }

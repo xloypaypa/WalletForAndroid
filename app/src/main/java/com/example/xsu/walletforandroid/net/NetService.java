@@ -131,7 +131,8 @@ public class NetService extends Service {
                             for (int i = 0; i < len; i++) {
                                 message.add(buffer[i]);
                             }
-                            splitPackage();
+                            //noinspection StatementWithEmptyBody
+                            while (splitPackage());
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -140,7 +141,7 @@ public class NetService extends Service {
                 }
             }
 
-            private void splitPackage() {
+            private boolean splitPackage() {
                 for (int i = 0; i < message.size(); i++) {
                     if (message.get(i) == 'x') {
                         byte[] head = new byte[i];
@@ -159,9 +160,10 @@ public class NetService extends Service {
                             Log.i("get message", new String(result));
                             sendToUI(result);
                         }
-                        break;
+                        return true;
                     }
                 }
+                return false;
             }
 
             private void sendToUI(byte[] result) {
