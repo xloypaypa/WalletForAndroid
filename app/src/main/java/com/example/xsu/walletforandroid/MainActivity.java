@@ -105,6 +105,28 @@ public class MainActivity extends AppCompatActivity
                         }
                         return true;
                     }
+                })
+                .addCommandSolver("updateMoneyBroadcast", new MessageHandler.CommandSolver() {
+                    @Override
+                    public boolean solveCommand(Activity activity, byte[] body) throws JSONException {
+                        try {
+                            netBinder.sendMessage(ProtocolBuilder.getMoney());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                    }
+                })
+                .addCommandSolver("updateBudgetBroadcast", new MessageHandler.CommandSolver() {
+                    @Override
+                    public boolean solveCommand(Activity activity, byte[] body) throws JSONException {
+                        try {
+                            netBinder.sendMessage(ProtocolBuilder.getBudget());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                    }
                 }).create();
         bindNetService();
     }
