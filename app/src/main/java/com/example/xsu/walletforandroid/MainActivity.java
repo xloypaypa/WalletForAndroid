@@ -1,5 +1,6 @@
 package com.example.xsu.walletforandroid;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -7,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.example.xsu.walletforandroid.handler.MessageHandler;
 import com.example.xsu.walletforandroid.net.NetService;
 import com.example.xsu.walletforandroid.net.ProtocolBuilder;
 
@@ -64,21 +65,11 @@ public class MainActivity extends AppCompatActivity
 
         fragment = (FrameLayout) this.findViewById(R.id.fragment);
 
-        this.handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                Bundle data = message.getData();
-                String command = data.getString("command");
-                byte[] body = data.getByteArray("body");
-
-                if (command == null || body == null) {
-                    return false;
-                }
-
-                List<Fragment> all = getSupportFragmentManager().getFragments();
-
-                if (command.equals("getMoney")) {
-                    try {
+        this.handler = new MessageHandler.Builder(this)
+                .addCommandSolver("getMoney", new MessageHandler.CommandSolver() {
+                    @Override
+                    public boolean solveCommand(Activity activity, byte[] body) throws JSONException {
+                        List<Fragment> all = getSupportFragmentManager().getFragments();
                         List<MoneyEntity> moneyEntities = new ArrayList<>();
                         JSONArray jsonArray = new JSONArray(new String(body));
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -92,11 +83,13 @@ public class MainActivity extends AppCompatActivity
                                 ((MoneyFragment) fragment).setMoneyList(moneyEntities);
                             }
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        return true;
                     }
-                } else if (command.equals("getBudget")) {
-                    try {
+                })
+                .addCommandSolver("getBudget", new MessageHandler.CommandSolver() {
+                    @Override
+                    public boolean solveCommand(Activity activity, byte[] body) throws JSONException {
+                        List<Fragment> all = getSupportFragmentManager().getFragments();
                         List<BudgetEntity> budgetEntities  = new ArrayList<>();
                         JSONArray jsonArray = new JSONArray(new String(body));
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -110,13 +103,9 @@ public class MainActivity extends AppCompatActivity
                                 ((BudgetFragment) fragment).setBudgetList(budgetEntities);
                             }
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        return true;
                     }
-                }
-                return true;
-            }
-        });
+                }).create();
         bindNetService();
     }
 

@@ -1,20 +1,21 @@
 package com.example.xsu.walletforandroid;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.xsu.walletforandroid.handler.MessageHandler;
 import com.example.xsu.walletforandroid.net.NetService;
 import com.example.xsu.walletforandroid.net.ProtocolBuilder;
 
@@ -37,32 +38,19 @@ public class ConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activiy_connect);
 
-        this.handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                Bundle data = message.getData();
-                String command = data.getString("command");
-                byte[] body = data.getByteArray("body");
-
-                if (command == null || body == null) {
-                    return false;
-                }
-
-                if (command.equals("/getSessionID")) {
-                    try {
+        this.handler = new MessageHandler.Builder(this)
+                .addCommandSolver("/getSessionID", new MessageHandler.CommandSolver() {
+                    @Override
+                    public boolean solveCommand(Activity activity, byte[] body) throws JSONException {
                         JSONObject jsonObject = new JSONObject(new String(body));
                         String sessionId = jsonObject.getString("result");
-                        Intent intentToLogin = new Intent(ConnectActivity.this, LoginActivity.class);
+                        Intent intentToLogin = new Intent(activity, LoginActivity.class);
                         intentToLogin.putExtra("sessionId", sessionId);
-                        ConnectActivity.this.startActivity(intentToLogin);
-                        ConnectActivity.this.onStop();
-                    } catch (JSONException e) {
-                        return false;
+                        activity.startActivity(intentToLogin);
+                        activity.finish();
+                        return true;
                     }
-                }
-                return true;
-            }
-        });
+                }).create();
 
         loadComponent();
 

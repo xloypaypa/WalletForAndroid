@@ -1,5 +1,6 @@
 package com.example.xsu.walletforandroid;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,10 +15,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.xsu.walletforandroid.handler.MessageHandler;
 import com.example.xsu.walletforandroid.net.NetService;
 import com.example.xsu.walletforandroid.net.ProtocolBuilder;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -35,12 +38,17 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        this.handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                return true;
-            }
-        });
+        this.handler = new MessageHandler.Builder(this)
+                .addCommandSolver("/register", new MessageHandler.CommandSolver() {
+                    @Override
+                    public boolean solveCommand(Activity activity, byte[] body) throws JSONException {
+                        JSONObject jsonObject = new JSONObject(new String(body));
+                        if (jsonObject.getString("result").equals("ok")) {
+                            activity.finish();
+                        }
+                        return true;
+                    }
+                }).create();
 
         loadComponent();
 

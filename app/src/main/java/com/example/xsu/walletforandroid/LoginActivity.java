@@ -1,5 +1,6 @@
 package com.example.xsu.walletforandroid;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.xsu.walletforandroid.handler.MessageHandler;
 import com.example.xsu.walletforandroid.net.NetService;
 import com.example.xsu.walletforandroid.net.ProtocolBuilder;
 
@@ -34,39 +36,31 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        this.handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                Bundle data = message.getData();
-                String command = data.getString("command");
-                byte[] body = data.getByteArray("body");
-
-                if (command == null || body == null) {
-                    return false;
-                }
-
-                if (command.equals("/login")) {
-                    try {
-                        netBinder.sendMessage(ProtocolBuilder.useApp("wallet"));
-                    } catch (InterruptedException | JSONException e) {
-                        e.printStackTrace();
+        this.handler = new MessageHandler.Builder(this)
+                .addCommandSolver("/login", new MessageHandler.CommandSolver() {
+                    @Override
+                    public boolean solveCommand(Activity activity, byte[] body) throws JSONException {
+                        try {
+                            netBinder.sendMessage(ProtocolBuilder.useApp("wallet"));
+                        } catch (InterruptedException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                        return true;
                     }
-                } else if (command.equals("/useApp")) {
-                    try {
+                })
+                .addCommandSolver("/useApp", new MessageHandler.CommandSolver() {
+                    @Override
+                    public boolean solveCommand(Activity activity, byte[] body) throws JSONException {
                         JSONObject jsonObject = new JSONObject(new String(body));
                         String result = jsonObject.getString("result");
                         if (result.equals("ok")) {
-                            Intent intentToMain = new Intent(LoginActivity.this, MainActivity.class);
-                            LoginActivity.this.startActivity(intentToMain);
-                            LoginActivity.this.onStop();
+                            Intent intentToMain = new Intent(activity, MainActivity.class);
+                            activity.startActivity(intentToMain);
+                            activity.finish();
                         }
-                    } catch (JSONException e) {
-                        return false;
+                        return true;
                     }
-                }
-                return true;
-            }
-        });
+                }).create();
 
         loadComponent();
 

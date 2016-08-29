@@ -11,8 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ConnectActivity"
-            android:noHistory="true">
+            android:name=".ConnectActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,8 +21,8 @@
 
         <service android:name=".net.NetService" />
 
-        <activity android:name=".LoginActivity" android:noHistory="true"/>
-        <activity android:name=".RegisterActivity" android:noHistory="true"/>
+        <activity android:name=".LoginActivity"/>
+        <activity android:name=".RegisterActivity"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
