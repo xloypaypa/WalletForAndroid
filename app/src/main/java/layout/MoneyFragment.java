@@ -9,8 +9,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -38,7 +40,6 @@ public class MoneyFragment extends Fragment {
     private OnMoneyFragmentInteractionListener mListener;
 
     private TableLayout tableLayout;
-    private Button addMoneyButton;
 
     private List<MoneyEntity> moneyEntities = new ArrayList<>();
 
@@ -72,10 +73,13 @@ public class MoneyFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         this.tableLayout = (TableLayout) this.getView().findViewById(R.id.moneyTable);
-        this.addMoneyButton = (Button) this.getView().findViewById(R.id.addMoneyButton);
+
+        Button addMoneyButton = (Button) this.getView().findViewById(R.id.addMoneyButton);
+        Button removeMoneyButton = (Button) this.getView().findViewById(R.id.removeMoneyButton);
+
         setDataOnTable(moneyEntities);
 
-        this.addMoneyButton.setOnClickListener(new View.OnClickListener() {
+        addMoneyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -93,6 +97,40 @@ public class MoneyFragment extends Fragment {
                                 String typename = typenameEditText.getText().toString();
                                 double value = Double.parseDouble(valueEditText.getText().toString());
                                 mListener.onAddMoneyFragmentInteraction(typename, value);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                builder.create().show();
+            }
+        });
+
+        removeMoneyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+
+                View dialogView = inflater.inflate(R.layout.dialog_remove_money, null);
+                final Spinner typenameSpinner = (Spinner) dialogView.findViewById(R.id.moneyTypeSpriner);
+
+                String[] moneyNames = new String[moneyEntities.size()];
+                for (int i = 0; i < moneyEntities.size(); i++) {
+                    moneyNames[i] = moneyEntities.get(i).getTypename();
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.support_simple_spinner_dropdown_item, moneyNames);
+                typenameSpinner.setAdapter(adapter);
+
+                builder.setTitle("remove money")
+                        .setView(dialogView)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                String removeItem = typenameSpinner.getSelectedItem().toString();
+                                mListener.onRemoveMoneyFragmentInteraction(removeItem);
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -170,5 +208,7 @@ public class MoneyFragment extends Fragment {
      */
     public interface OnMoneyFragmentInteractionListener {
         void onAddMoneyFragmentInteraction(String typename, double value);
+
+        void onRemoveMoneyFragmentInteraction(String typename);
     }
 }

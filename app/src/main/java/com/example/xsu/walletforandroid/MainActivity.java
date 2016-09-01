@@ -216,6 +216,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onRemoveMoneyFragmentInteraction(String typename) {
+        try {
+            netBinder.sendMessage(ProtocolBuilder.removeMoney(typename));
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void onBudgetFragmentInteraction(Uri uri) {
 
     }

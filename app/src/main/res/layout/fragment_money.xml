@@ -30,11 +30,25 @@
                 android:layout_gravity="center_horizontal"/>
         </ScrollView>
 
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/add_money"
-            android:id="@+id/addMoneyButton"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/add_money"
+                android:id="@+id/addMoneyButton"
+                android:layout_gravity="center_horizontal" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/remove_money"
+                android:id="@+id/removeMoneyButton"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>
