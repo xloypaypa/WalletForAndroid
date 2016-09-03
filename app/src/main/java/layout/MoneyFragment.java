@@ -75,6 +75,7 @@ public class MoneyFragment extends Fragment {
         this.tableLayout = (TableLayout) this.getView().findViewById(R.id.moneyTable);
 
         Button addMoneyButton = (Button) this.getView().findViewById(R.id.addMoneyButton);
+        Button transferMoneyButton = (Button) this.getView().findViewById(R.id.transferMoneyButton);
         Button removeMoneyButton = (Button) this.getView().findViewById(R.id.removeMoneyButton);
 
         setDataOnTable(moneyEntities);
@@ -97,6 +98,45 @@ public class MoneyFragment extends Fragment {
                                 String typename = typenameEditText.getText().toString();
                                 double value = Double.parseDouble(valueEditText.getText().toString());
                                 mListener.onAddMoneyFragmentInteraction(typename, value);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                builder.create().show();
+            }
+        });
+
+        transferMoneyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+
+                View dialogView = inflater.inflate(R.layout.dialog_transfer_money, null);
+                final Spinner fromSpinner = (Spinner) dialogView.findViewById(R.id.fromSpinner);
+                final Spinner toSpinner = (Spinner) dialogView.findViewById(R.id.toSpinner);
+                final EditText valueEditText = (EditText) dialogView.findViewById(R.id.valueEditText);
+
+                String[] moneyNames = new String[moneyEntities.size()];
+                for (int i = 0; i < moneyEntities.size(); i++) {
+                    moneyNames[i] = moneyEntities.get(i).getTypename();
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.support_simple_spinner_dropdown_item, moneyNames);
+                fromSpinner.setAdapter(adapter);
+                toSpinner.setAdapter(adapter);
+
+                builder.setTitle("add money")
+                        .setView(dialogView)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                String from = fromSpinner.getSelectedItem().toString();
+                                String to = toSpinner.getSelectedItem().toString();
+                                double value = Double.parseDouble(valueEditText.getText().toString());
+                                mListener.onTransferMoneyFragmentInteraction(from, to, value);
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -210,5 +250,7 @@ public class MoneyFragment extends Fragment {
         void onAddMoneyFragmentInteraction(String typename, double value);
 
         void onRemoveMoneyFragmentInteraction(String typename);
+
+        void onTransferMoneyFragmentInteraction(String from, String to, double value);
     }
 }

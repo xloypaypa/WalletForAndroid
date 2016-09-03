@@ -26,4 +26,7 @@
     <string name="action_settings">Settings</string>
     <string name="add_money">add money</string>
     <string name="remove_money">remove money</string>
+    <string name="transfer_money">transfer money</string>
+    <string name="from">from</string>
+    <string name="to">to</string>
 </resources>

@@ -225,6 +225,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onTransferMoneyFragmentInteraction(String from, String to, double value) {
+        try {
+            netBinder.sendMessage(ProtocolBuilder.transferMoney(from, to, value));
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void onBudgetFragmentInteraction(Uri uri) {
 
     }
