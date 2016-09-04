@@ -32,4 +32,7 @@
     <string name="add_budget">add budget</string>
     <string name="transfer_budget">transfer budget</string>
     <string name="remove_budget">remove budget</string>
+    <string name="use_money">use money</string>
+    <string name="money_type">money type</string>
+    <string name="budget_type">budget type</string>
 </resources>

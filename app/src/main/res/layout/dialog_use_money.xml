@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/money_type"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView14" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/moneyTypeSpinner"
+        android:layout_below="@+id/textView14"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/budget_type"
+        android:layout_below="@+id/moneyTypeSpinner"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView15" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/budgetTypeSpinner"
+        android:layout_below="@+id/textView15"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/valueEditText"
+        android:layout_below="@+id/textView16"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:labelFor="@id/valueEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/value"
+        android:layout_below="@+id/budgetTypeSpinner"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView16" />
+</RelativeLayout>

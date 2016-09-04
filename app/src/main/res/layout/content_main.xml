@@ -14,11 +14,27 @@
     android:id="@+id/main">
 
 
-    <fragment
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="layout.MoneyFragment"
-        android:id="@+id/fragment"
-        android:layout_gravity="center"
-        tools:layout="@layout/fragment_money" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="layout.MoneyFragment"
+            android:id="@+id/fragment"
+            android:layout_gravity="center"
+            tools:layout="@layout/fragment_money"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/use_money"
+            android:id="@+id/useMoneyButton" />
+    </LinearLayout>
+
 </RelativeLayout>

@@ -1,10 +1,11 @@
 package com.example.xsu.walletforandroid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -17,8 +18,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Spinner;
 
 import com.example.xsu.walletforandroid.handler.MessageHandler;
 import com.example.xsu.walletforandroid.net.NetService;
@@ -128,6 +135,57 @@ public class MainActivity extends AppCompatActivity
                         return true;
                     }
                 }).create();
+
+        Button useMoneyButton = (Button) this.findViewById(R.id.useMoneyButton);
+        useMoneyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+
+                View dialogView = inflater.inflate(R.layout.dialog_use_money, null);
+                final Spinner moneyTypeSpinner = (Spinner) dialogView.findViewById(R.id.moneyTypeSpinner);
+                final Spinner budgetTypeSpinner = (Spinner) dialogView.findViewById(R.id.budgetTypeSpinner);
+                final EditText valueEditText = (EditText) dialogView.findViewById(R.id.valueEditText);
+
+                String[] moneyNames = new String[moneyEntities.size()];
+                for (int i = 0; i < moneyEntities.size(); i++) {
+                    moneyNames[i] = moneyEntities.get(i).getTypename();
+                }
+                ArrayAdapter<String> moneyAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, moneyNames);
+                moneyTypeSpinner.setAdapter(moneyAdapter);
+
+                String[] budgetNames = new String[budgetEntities.size()];
+                for (int i = 0; i < budgetEntities.size(); i++) {
+                    budgetNames[i] = budgetEntities.get(i).getTypename();
+                }
+                ArrayAdapter<String> budgetAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, budgetNames);
+                budgetTypeSpinner.setAdapter(budgetAdapter);
+
+                builder.setTitle("add money")
+                        .setView(dialogView)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                String moneyType = moneyTypeSpinner.getSelectedItem().toString();
+                                String budgetType = budgetTypeSpinner.getSelectedItem().toString();
+                                double value = Double.parseDouble(valueEditText.getText().toString());
+                                try {
+                                    netBinder.sendMessage(ProtocolBuilder.useMoney(moneyType, budgetType, value));
+                                } catch (InterruptedException | JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                builder.create().show();
+            }
+        });
+
         bindNetService();
     }
 
