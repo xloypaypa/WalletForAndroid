@@ -234,7 +234,29 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBudgetFragmentInteraction(Uri uri) {
+    public void onAddBudgetFragmentInteraction(String typename, double value) {
+        try {
+            netBinder.sendMessage(ProtocolBuilder.addBudget(typename, value));
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Override
+    public void onRemoveBudgetFragmentInteraction(String typename) {
+        try {
+            netBinder.sendMessage(ProtocolBuilder.removeBudget(typename));
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onTransferBudgetFragmentInteraction(String from, String to, double value) {
+        try {
+            netBinder.sendMessage(ProtocolBuilder.transferBudget(from, to, value));
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

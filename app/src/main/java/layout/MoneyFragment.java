@@ -86,7 +86,7 @@ public class MoneyFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 LayoutInflater inflater = getActivity().getLayoutInflater();
 
-                View dialogView = inflater.inflate(R.layout.dialog_add_money, null);
+                View dialogView = inflater.inflate(R.layout.dialog_add_money_or_budget, null);
                 final EditText typenameEditText = (EditText) dialogView.findViewById(R.id.typenameEditText);
                 final EditText valueEditText = (EditText) dialogView.findViewById(R.id.valueEditText);
 
@@ -115,7 +115,7 @@ public class MoneyFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 LayoutInflater inflater = getActivity().getLayoutInflater();
 
-                View dialogView = inflater.inflate(R.layout.dialog_transfer_money, null);
+                View dialogView = inflater.inflate(R.layout.dialog_transfer_money_or_budget, null);
                 final Spinner fromSpinner = (Spinner) dialogView.findViewById(R.id.fromSpinner);
                 final Spinner toSpinner = (Spinner) dialogView.findViewById(R.id.toSpinner);
                 final EditText valueEditText = (EditText) dialogView.findViewById(R.id.valueEditText);
@@ -154,8 +154,8 @@ public class MoneyFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 LayoutInflater inflater = getActivity().getLayoutInflater();
 
-                View dialogView = inflater.inflate(R.layout.dialog_remove_money, null);
-                final Spinner typenameSpinner = (Spinner) dialogView.findViewById(R.id.moneyTypeSpriner);
+                View dialogView = inflater.inflate(R.layout.dialog_remove_money_or_budget, null);
+                final Spinner typenameSpinner = (Spinner) dialogView.findViewById(R.id.typenameSpriner);
 
                 String[] moneyNames = new String[moneyEntities.size()];
                 for (int i = 0; i < moneyEntities.size(); i++) {

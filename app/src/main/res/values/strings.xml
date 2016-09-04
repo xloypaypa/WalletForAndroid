@@ -29,4 +29,7 @@
     <string name="transfer_money">transfer money</string>
     <string name="from">from</string>
     <string name="to">to</string>
+    <string name="add_budget">add budget</string>
+    <string name="transfer_budget">transfer budget</string>
+    <string name="remove_budget">remove budget</string>
 </resources>
