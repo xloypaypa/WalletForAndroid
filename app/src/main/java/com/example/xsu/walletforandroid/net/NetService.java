@@ -159,8 +159,10 @@ public class NetService extends Service {
                             }
                             Log.i("get message", new String(result));
                             sendToUI(result);
+                            return true;
+                        } else {
+                            return false;
                         }
-                        return true;
                     }
                 }
                 return false;

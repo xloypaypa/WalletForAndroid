@@ -35,15 +35,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import layout.BudgetFragment;
+import layout.DetailFragment;
 import layout.MoneyFragment;
 import model.entity.BudgetEntity;
+import model.entity.DetailEntity;
 import model.entity.MoneyEntity;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MoneyFragment.OnMoneyFragmentInteractionListener, BudgetFragment.OnBudgetFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, MoneyFragment.OnMoneyFragmentInteractionListener,
+        DetailFragment.OnFragmentInteractionListener, BudgetFragment.OnBudgetFragmentInteractionListener {
 
     private ServiceConnection serviceConnection;
     private NetService.NetBinder netBinder;
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity
 
     private List<MoneyEntity> moneyEntities;
     private List<BudgetEntity> budgetEntities;
+    private List<DetailEntity> detailEntities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +136,26 @@ public class MainActivity extends AppCompatActivity
                             netBinder.sendMessage(ProtocolBuilder.getBudget());
                         } catch (InterruptedException e) {
                             e.printStackTrace();
+                        }
+                        return true;
+                    }
+                })
+                .addCommandSolver("getDetail", new MessageHandler.CommandSolver() {
+                    @Override
+                    public boolean solveCommand(Activity activity, byte[] body) throws JSONException {
+                        List<Fragment> all = getSupportFragmentManager().getFragments();
+                        List<DetailEntity> detailEntities  = new ArrayList<>();
+                        JSONArray jsonArray = new JSONArray(new String(body));
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            DetailEntity detailEntity = new DetailEntity();
+                            detailEntity.updateValueFromJson(jsonArray.get(i).toString());
+                            detailEntities.add(detailEntity);
+                        }
+                        MainActivity.this.detailEntities = detailEntities;
+                        for (Fragment fragment : all) {
+                            if (fragment instanceof DetailFragment) {
+                                ((DetailFragment) fragment).setDetailList(detailEntities);
+                            }
                         }
                         return true;
                     }
@@ -238,6 +263,10 @@ public class MainActivity extends AppCompatActivity
             BudgetFragment budgetFragment = BudgetFragment.newInstance();
             budgetFragment.setBudgetList(this.budgetEntities);
             fragment = budgetFragment;
+        } else if (id == R.id.nav_detail) {
+            DetailFragment detailFragment = DetailFragment.newInstance();
+            detailFragment.setDetailList(this.detailEntities);
+            fragment = detailFragment;
         }
 
         List<Fragment> all = getSupportFragmentManager().getFragments();
@@ -246,6 +275,8 @@ public class MainActivity extends AppCompatActivity
                 ((MoneyFragment) now).setMoneyList(moneyEntities);
             } else if (now instanceof BudgetFragment) {
                 ((BudgetFragment) now).setBudgetList(budgetEntities);
+            } else if (now instanceof DetailFragment) {
+                ((DetailFragment) now).setDetailList(detailEntities);
             }
         }
 
@@ -313,6 +344,15 @@ public class MainActivity extends AppCompatActivity
     public void onTransferBudgetFragmentInteraction(String from, String to, double value) {
         try {
             netBinder.sendMessage(ProtocolBuilder.transferBudget(from, to, value));
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onUpdateDetailFragmentInteraction(Date from, Date to) {
+        try {
+            netBinder.sendMessage(ProtocolBuilder.getDetail(from, to));
         } catch (InterruptedException | JSONException e) {
             e.printStackTrace();
         }

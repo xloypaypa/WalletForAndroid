@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.PublicKey;
+import java.util.Date;
 
 /**
  * Created by xlo on 16/2/23.
@@ -129,6 +130,14 @@ public class ProtocolBuilder {
         jsonObject.put("value", value);
         String body = jsonObject.toString();
         return ("assignMoneyToBudget#" + body).getBytes();
+    }
+
+    public static byte[] getDetail(Date from, Date to) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("from", from.getTime() + "");
+        jsonObject.put("to", to.getTime() + "");
+        String body = jsonObject.toString();
+        return ("getDetail#" + body).getBytes();
     }
 
 }
